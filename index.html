@@ -1,686 +1,1116 @@
 <!DOCTYPE html>
 <html lang="uz">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>greenmarket.life - Ko'chatlar va Manzarali Daraxtlar</title>
-<script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<script>tailwind.config={theme:{extend:{colors:{primary:'#2e7d32',secondary:'#66bb6a'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
-<style>
-:where([class^="ri-"])::before { content: "\f3c2"; }
-body {
-font-family: 'Montserrat', sans-serif;
-background-color: #f9faf7;
-}
-.modal-overlay {
-background-color: rgba(0, 0, 0, 0.5);
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-z-index: 50;
-display: flex;
-align-items: center;
-justify-content: center;
-}
-.category-card:hover {
-transform: translateY(-5px);
-box-shadow: 0 10px 25px rgba(46, 125, 50, 0.1);
-}
-.product-card:hover {
-transform: translateY(-5px);
-box-shadow: 0 10px 25px rgba(46, 125, 50, 0.1);
-}
-input[type="range"] {
--webkit-appearance: none;
-width: 100%;
-height: 6px;
-background: #e0e0e0;
-border-radius: 999px;
-outline: none;
-}
-input[type="range"]::-webkit-slider-thumb {
--webkit-appearance: none;
-width: 18px;
-height: 18px;
-background: #2e7d32;
-border-radius: 50%;
-cursor: pointer;
-}
-input[type="range"]::-moz-range-thumb {
-width: 18px;
-height: 18px;
-background: #2e7d32;
-border-radius: 50%;
-cursor: pointer;
-border: none;
-}
-.custom-checkbox {
-position: relative;
-padding-left: 28px;
-cursor: pointer;
-user-select: none;
-}
-.custom-checkbox input {
-position: absolute;
-opacity: 0;
-cursor: pointer;
-height: 0;
-width: 0;
-}
-.checkmark {
-position: absolute;
-top: 0;
-left: 0;
-height: 20px;
-width: 20px;
-background-color: #fff;
-border: 2px solid #e0e0e0;
-border-radius: 4px;
-}
-.custom-checkbox:hover input ~ .checkmark {
-border-color: #2e7d32;
-}
-.custom-checkbox input:checked ~ .checkmark {
-background-color: #2e7d32;
-border-color: #2e7d32;
-}
-.checkmark:after {
-content: "";
-position: absolute;
-display: none;
-}
-.custom-checkbox input:checked ~ .checkmark:after {
-display: block;
-}
-.custom-checkbox .checkmark:after {
-left: 6px;
-top: 2px;
-width: 5px;
-height: 10px;
-border: solid white;
-border-width: 0 2px 2px 0;
-transform: rotate(45deg);
-}
-.tab-button {
-position: relative;
-z-index: 1;
-}
-.tab-button.active {
-color: white;
-}
-.tab-slider {
-position: absolute;
-height: 80%;
-top: 10%;
-transition: all 0.3s ease;
-border-radius: 9999px;
-z-index: 0;
-}
-</style>
-</head>
-<body>
-<!-- Modal Overlay -->
-<div class="modal-overlay" id="categoryModal">
-<div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4">
-<div class="text-center mb-8">
-<h2 class="text-3xl font-bold text-gray-800 mb-2">O'zingizga kerakli qatorni tanlang</h2>
-<p class="text-gray-600">GREEN MARKET.UZ - Sifatli ko'chatlar va manzarali daraxtlar</p>
-</div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-<!-- Manzarali daraxtlar -->
-<div class="category-card bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border border-gray-100" data-category="manzarali-daraxtlar">
-<div class="w-16 h-16 flex items-center justify-center bg-green-50 rounded-full mb-4">
-<i class="ri-plant-line text-primary ri-2x"></i>
-</div>
-<h3 class="text-gray-800 font-medium text-center">Manzarali daraxtlar</h3>
-</div>
-<!-- Ko'chatlar -->
-<div class="category-card bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border border-gray-100" data-category="kochatlar">
-<div class="w-16 h-16 flex items-center justify-center bg-green-50 rounded-full mb-4">
-<i class="ri-seedling-line text-primary ri-2x"></i>
-</div>
-<h3 class="text-gray-800 font-medium text-center">Ko'chatlar</h3>
-</div>
-<!-- Gullar -->
-<div class="category-card bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border border-gray-100" data-category="gullar">
-<div class="w-16 h-16 flex items-center justify-center bg-green-50 rounded-full mb-4">
-<i class="ri-flower-line text-primary ri-2x"></i>
-</div>
-<h3 class="text-gray-800 font-medium text-center">Gullar</h3>
-</div>
-<!-- Bog' jihozlari -->
-<div class="category-card bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border border-gray-100" data-category="bog-jihozlari">
-<div class="w-16 h-16 flex items-center justify-center bg-green-50 rounded-full mb-4">
-<i class="ri-scissors-cut-line text-primary ri-2x"></i>
-</div>
-<h3 class="text-gray-800 font-medium text-center">Bog' jihozlari</h3>
-</div>
-</div>
-</div>
-</div>
-<!-- Header -->
-<header class="bg-white shadow-sm sticky top-0 z-40">
-<div class="container mx-auto px-4 py-3 flex items-center justify-between">
-<a href="#" class="flex items-center">
-<span class="text-primary text-2xl font-['Pacifico']">GREEN MARKET.UZ</span>
-</a>
-<div class="flex items-center space-x-6">
-<div class="hidden md:flex items-center space-x-6">
-<a href="#" class="text-gray-700 hover:text-primary font-medium">Bosh sahifa</a>
-<a href="#" class="text-gray-700 hover:text-primary font-medium">Katalog</a>
-<a href="#" class="text-gray-700 hover:text-primary font-medium">Biz haqimizda</a>
-<a href="#" class="text-gray-700 hover:text-primary font-medium">Aloqa</a>
-</div>
-<div class="flex items-center space-x-4">
-<div class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer">
-<i class="ri-search-line text-gray-700"></i>
-</div>
-<div class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer">
-<i class="ri-heart-line text-gray-700"></i>
-</div>
-<div id="cartButton" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer relative">
-<i class="ri-shopping-cart-line text-gray-700"></i>
-<span id="cartCounter" class="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">4</span>
-</div>
-<div class="w-10 h-10 md:hidden flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer" id="mobileMenuButton">
-<i class="ri-menu-line text-gray-700"></i>
-</div>
-</div>
-</div>
-</div>
-</header>
-<!-- Mobile Menu -->
-<div class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" id="mobileMenu">
-<div class="bg-white h-full w-64 p-4 transform transition-transform">
-<div class="flex justify-between items-center mb-6">
-<span class="text-primary text-xl font-['Pacifico']">GREEN MARKET.UZ</span>
-<div class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer" id="closeMenu">
-<i class="ri-close-line text-gray-700"></i>
-</div>
-</div>
-<div class="flex flex-col space-y-4">
-<a href="#" class="text-gray-700 hover:text-primary font-medium py-2">Bosh sahifa</a>
-<a href="#" class="text-gray-700 hover:text-primary font-medium py-2">Katalog</a>
-<a href="#" class="text-gray-700 hover:text-primary font-medium py-2">Biz haqimizda</a>
-<a href="#" class="text-gray-700 hover:text-primary font-medium py-2">Aloqa</a>
-</div>
-</div>
-</div>
-<!-- Main Content -->
-<main class="container mx-auto px-4 py-8">
-<!-- Breadcrumbs -->
-<div class="flex items-center text-sm text-gray-500 mb-6">
-<a href="#" class="hover:text-primary">Bosh sahifa</a>
-<i class="ri-arrow-right-s-line mx-2"></i>
-<span class="text-gray-700 font-medium">Manzarali daraxtlar</span>
-</div>
-<div class="flex flex-col lg:flex-row gap-8">
-<!-- Filters Sidebar -->
-<div class="lg:w-1/4">
-<div class="bg-white rounded-lg shadow-sm p-6 sticky top-24">
-<h3 class="text-lg font-bold text-gray-800 mb-4">Filtrlash</h3>
-<!-- Price Filter -->
-<div class="mb-6">
-<h4 class="font-medium text-gray-700 mb-3">Narx</h4>
-<div class="mb-4">
-<input type="range" min="0" max="5000000" value="2500000" class="w-full" id="priceRange">
-<div class="flex justify-between mt-2 text-sm text-gray-600">
-<span>0 so'm</span>
-<span id="priceValue">2,500,000 so'm</span>
-<span>5,000,000 so'm</span>
-</div>
-</div>
-</div>
-<!-- Height Filter -->
-<div class="mb-6">
-<h4 class="font-medium text-gray-700 mb-3">Balandligi</h4>
-<div class="space-y-2">
-<label class="custom-checkbox flex items-center text-sm text-gray-700">
-<input type="checkbox" id="height1" checked>
-<span class="checkmark" data-checkbox="height1"></span>
-1-2 metr
-</label>
-<label class="custom-checkbox flex items-center text-sm text-gray-700">
-<input type="checkbox" id="height2">
-<span class="checkmark" data-checkbox="height2"></span>
-2-3 metr
-</label>
-<label class="custom-checkbox flex items-center text-sm text-gray-700">
-<input type="checkbox" id="height3">
-<span class="checkmark" data-checkbox="height3"></span>
-3-5 metr
-</label>
-<label class="custom-checkbox flex items-center text-sm text-gray-700">
-<input type="checkbox" id="height4">
-<span class="checkmark" data-checkbox="height4"></span>
-5+ metr
-</label>
-</div>
-</div>
-<!-- Type Filter -->
-<div class="mb-6">
-<h4 class="font-medium text-gray-700 mb-3">Turi</h4>
-<div class="space-y-2">
-<label class="custom-checkbox flex items-center text-sm text-gray-700">
-<input type="checkbox" checked>
-<span class="checkmark"></span>
-Igna bargli
-</label>
-<label class="custom-checkbox flex items-center text-sm text-gray-700">
-<input type="checkbox" checked>
-<span class="checkmark"></span>
-Yaproq bargli
-</label>
-<label class="custom-checkbox flex items-center text-sm text-gray-700">
-<input type="checkbox">
-<span class="checkmark"></span>
-Mevali
-</label>
-</div>
-</div>
-<!-- Season Filter -->
-<div class="mb-6">
-<h4 class="font-medium text-gray-700 mb-3">Mavsumiylik</h4>
-<div class="space-y-2">
-<label class="custom-checkbox flex items-center text-sm text-gray-700">
-<input type="checkbox" checked>
-<span class="checkmark"></span>
-Doimiy yashil
-</label>
-<label class="custom-checkbox flex items-center text-sm text-gray-700">
-<input type="checkbox">
-<span class="checkmark"></span>
-Barglarini to'kuvchi
-</label>
-</div>
-</div>
-<button class="w-full bg-primary text-white py-2 px-4 rounded-button font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Filtrlash</button>
-</div>
-</div>
-<!-- Products Grid -->
-<div class="lg:w-3/4">
-<!-- Category Title and Sorting -->
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-<div>
-<h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Manzarali daraxtlar</h1>
-<p class="text-gray-600">Uyingiz va bog'ingiz uchun eng sara manzarali daraxtlar</p>
-</div>
-<div class="mt-4 md:mt-0 flex items-center">
-<span class="text-gray-600 mr-3">Saralash:</span>
-<div class="relative">
-<button class="bg-white border border-gray-300 rounded-button py-2 px-4 flex items-center space-x-2 text-gray-700 whitespace-nowrap">
-<span>Narx: arzondan qimmatga</span>
-<i class="ri-arrow-down-s-line"></i>
-</button>
-</div>
-</div>
-</div>
-<!-- Sub Categories Tabs -->
-<div class="bg-white rounded-full p-1 inline-flex mb-8 relative shadow-sm">
-<div class="tab-slider bg-primary" style="width: 33.33%; left: 0;"></div>
-<button class="tab-button py-2 px-6 text-sm font-medium rounded-full active" data-tab="all">Barcha</button>
-<button class="tab-button py-2 px-6 text-sm font-medium rounded-full" data-tab="igna">Igna bargli</button>
-<button class="tab-button py-2 px-6 text-sm font-medium rounded-full" data-tab="yaproq">Yaproq bargli</button>
-</div>
-<!-- Products Grid -->
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-<!-- Product 1 -->
-<div class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300">
-<div class="relative">
-<img src="https://readdy.ai/api/search-image?query=beautiful%20pine%20tree%20with%20deep%20green%20needles%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=1&orientation=landscape" alt="Oddiy Archa" class="w-full h-48 object-cover object-top">
-<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md">
-<i class="ri-heart-line text-gray-600"></i>
-</button>
-</div>
-<div class="p-4">
-<h3 class="font-medium text-gray-800 mb-1">Oddiy Archa</h3>
-<p class="text-gray-600 text-sm mb-2">Igna bargli, doimiy yashil</p>
-<div class="flex items-center mb-3">
-<span class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full">Balandligi: 1.5-2m</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-bold text-gray-800">450,000 so'm</span>
-<button class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Savatga</button>
-</div>
-</div>
-</div>
-<!-- Product 2 -->
-<div class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300">
-<div class="relative">
-<img src="https://readdy.ai/api/search-image?query=beautiful%20blue%20spruce%20tree%20with%20blue-green%20needles%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=2&orientation=landscape" alt="Ko'k Archa" class="w-full h-48 object-cover object-top">
-<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md">
-<i class="ri-heart-line text-gray-600"></i>
-</button>
-</div>
-<div class="p-4">
-<h3 class="font-medium text-gray-800 mb-1">Ko'k Archa</h3>
-<p class="text-gray-600 text-sm mb-2">Igna bargli, doimiy yashil</p>
-<div class="flex items-center mb-3">
-<span class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full">Balandligi: 2-2.5m</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-bold text-gray-800">650,000 so'm</span>
-<button class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Savatga</button>
-</div>
-</div>
-</div>
-<!-- Product 3 -->
-<div class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300">
-<div class="relative">
-<img src="https://readdy.ai/api/search-image?query=beautiful%20Japanese%20maple%20tree%20with%20red%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=3&orientation=landscape" alt="Yapon Zarangi" class="w-full h-48 object-cover object-top">
-<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md">
-<i class="ri-heart-line text-gray-600"></i>
-</button>
-</div>
-<div class="p-4">
-<h3 class="font-medium text-gray-800 mb-1">Yapon Zarangi</h3>
-<p class="text-gray-600 text-sm mb-2">Yaproq bargli, qizil</p>
-<div class="flex items-center mb-3">
-<span class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full">Balandligi: 1-1.5m</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-bold text-gray-800">1,200,000 so'm</span>
-<button class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Savatga</button>
-</div>
-</div>
-</div>
-<!-- Product 4 -->
-<div class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300">
-<div class="relative">
-<img src="https://readdy.ai/api/search-image?query=beautiful%20weeping%20willow%20tree%20with%20long%20drooping%20branches%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=4&orientation=landscape" alt="Majnuntol" class="w-full h-48 object-cover object-top">
-<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md">
-<i class="ri-heart-line text-gray-600"></i>
-</button>
-</div>
-<div class="p-4">
-<h3 class="font-medium text-gray-800 mb-1">Majnuntol</h3>
-<p class="text-gray-600 text-sm mb-2">Yaproq bargli, osilgan</p>
-<div class="flex items-center mb-3">
-<span class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full">Balandligi: 2.5-3m</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-bold text-gray-800">850,000 so'm</span>
-<button class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Savatga</button>
-</div>
-</div>
-</div>
-<!-- Product 5 -->
-<div class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300">
-<div class="relative">
-<img src="https://readdy.ai/api/search-image?query=beautiful%20thuja%20occidentalis%20tree%2C%20emerald%20green%20arborvitae%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=5&orientation=landscape" alt="Tuya" class="w-full h-48 object-cover object-top">
-<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md">
-<i class="ri-heart-line text-gray-600"></i>
-</button>
-</div>
-<div class="p-4">
-<h3 class="font-medium text-gray-800 mb-1">Tuya</h3>
-<p class="text-gray-600 text-sm mb-2">Igna bargli, piramida shakli</p>
-<div class="flex items-center mb-3">
-<span class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full">Balandligi: 1.8-2.2m</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-bold text-gray-800">580,000 so'm</span>
-<button class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Savatga</button>
-</div>
-</div>
-</div>
-<!-- Product 6 -->
-<div class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300">
-<div class="relative">
-<img src="https://readdy.ai/api/search-image?query=beautiful%20magnolia%20tree%20with%20large%20white%20flowers%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=6&orientation=landscape" alt="Magnoliya" class="w-full h-48 object-cover object-top">
-<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md">
-<i class="ri-heart-line text-gray-600"></i>
-</button>
-</div>
-<div class="p-4">
-<h3 class="font-medium text-gray-800 mb-1">Magnoliya</h3>
-<p class="text-gray-600 text-sm mb-2">Yaproq bargli, gullaydigan</p>
-<div class="flex items-center mb-3">
-<span class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full">Balandligi: 1.5-2m</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-bold text-gray-800">1,450,000 so'm</span>
-<button class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Savatga</button>
-</div>
-</div>
-</div>
-<!-- Product 7 -->
-<div class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300">
-<div class="relative">
-<img src="https://readdy.ai/api/search-image?query=beautiful%20juniper%20tree%20with%20blue%20berries%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=7&orientation=landscape" alt="Archa (Juniper)" class="w-full h-48 object-cover object-top">
-<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md">
-<i class="ri-heart-line text-gray-600"></i>
-</button>
-</div>
-<div class="p-4">
-<h3 class="font-medium text-gray-800 mb-1">Archa (Juniper)</h3>
-<p class="text-gray-600 text-sm mb-2">Igna bargli, ko'k mevali</p>
-<div class="flex items-center mb-3">
-<span class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full">Balandligi: 1-1.2m</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-bold text-gray-800">520,000 so'm</span>
-<button class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Savatga</button>
-</div>
-</div>
-</div>
-<!-- Product 8 -->
-<div class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300">
-<div class="relative">
-<img src="https://readdy.ai/api/search-image?query=beautiful%20birch%20tree%20with%20white%20bark%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=8&orientation=landscape" alt="Oq Qayin" class="w-full h-48 object-cover object-top">
-<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md">
-<i class="ri-heart-line text-gray-600"></i>
-</button>
-</div>
-<div class="p-4">
-<h3 class="font-medium text-gray-800 mb-1">Oq Qayin</h3>
-<p class="text-gray-600 text-sm mb-2">Yaproq bargli, oq po'stloqli</p>
-<div class="flex items-center mb-3">
-<span class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full">Balandligi: 2.5-3m</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-bold text-gray-800">750,000 so'm</span>
-<button class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Savatga</button>
-</div>
-</div>
-</div>
-</div>
-<!-- Pagination -->
-<div class="flex justify-center mt-10">
-<div class="inline-flex rounded-md shadow-sm">
-<button class="py-2 px-4 border border-gray-300 bg-white text-gray-700 rounded-l-lg hover:bg-gray-50 whitespace-nowrap">Oldingi</button>
-<button class="py-2 px-4 border-t border-b border-gray-300 bg-primary text-white whitespace-nowrap">1</button>
-<button id="page2" class="py-2 px-4 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50 whitespace-nowrap">2</button>
-<button class="py-2 px-4 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50 whitespace-nowrap">3</button>
-<button class="py-2 px-4 border border-gray-300 bg-white text-gray-700 rounded-r-lg hover:bg-gray-50 whitespace-nowrap">Keyingi</button>
-</div>
-</div>
-</div>
-</div>
-</main>
-<!-- Footer -->
-<footer class="bg-white mt-16 border-t border-gray-200">
-<div class="container mx-auto px-4 py-12">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-<div>
-<a href="#" class="inline-block mb-6">
-<span class="text-primary text-2xl font-['Pacifico']">GREEN MARKET.UZ</span>
-</a>
-<p class="text-gray-600 mb-6">Uyingiz va bog'ingiz uchun eng sifatli ko'chatlar, manzarali daraxtlar va gullar</p>
-<div class="flex space-x-4">
-<a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors">
-<i class="ri-facebook-fill"></i>
-</a>
-<a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors">
-<i class="ri-instagram-line"></i>
-</a>
-<a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors">
-<i class="ri-telegram-line"></i>
-</a>
-</div>
-</div>
-<div>
-<h4 class="text-gray-800 font-bold mb-6">Katalog</h4>
-<ul class="space-y-3">
-<li><a href="#" class="text-gray-600 hover:text-primary">Manzarali daraxtlar</a></li>
-<li><a href="#" class="text-gray-600 hover:text-primary">Ko'chatlar</a></li>
-<li><a href="#" class="text-gray-600 hover:text-primary">Gullar</a></li>
-<li><a href="#" class="text-gray-600 hover:text-primary">Bog' jihozlari</a></li>
-<li><a href="#" class="text-gray-600 hover:text-primary">O'g'itlar</a></li>
-</ul>
-</div>
-<div>
-<h4 class="text-gray-800 font-bold mb-6">Ma'lumot</h4>
-<ul class="space-y-3">
-<li><a href="#" class="text-gray-600 hover:text-primary">Biz haqimizda</a></li>
-<li><a href="#" class="text-gray-600 hover:text-primary">Yetkazib berish</a></li>
-<li><a href="#" class="text-gray-600 hover:text-primary">To'lov usullari</a></li>
-<li><a href="#" class="text-gray-600 hover:text-primary">Kafolat</a></li>
-<li><a href="#" class="text-gray-600 hover:text-primary">Bog'lanish</a></li>
-</ul>
-</div>
-<div>
-<h4 class="text-gray-800 font-bold mb-6">Aloqa</h4>
-<ul class="space-y-3">
-<li class="flex items-start">
-<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary">
-<i class="ri-map-pin-line"></i>
-</div>
-<span class="text-gray-600">Toshkent sh., Chilonzor tumani, Bunyodkor ko'chasi, 12-uy</span>
-</li>
-<li class="flex items-center">
-<div class="w-5 h-5 flex items-center justify-center mr-3 text-primary">
-<i class="ri-phone-line"></i>
-</div>
-<span class="text-gray-600">+998 90 123 45 67</span>
-</li>
-<li class="flex items-center">
-<div class="w-5 h-5 flex items-center justify-center mr-3 text-primary">
-<i class="ri-mail-line"></i>
-</div>
-<span class="text-gray-600">info@greenmarket.uz</span>
-</li>
-<li class="flex items-center">
-<div class="w-5 h-5 flex items-center justify-center mr-3 text-primary">
-<i class="ri-time-line"></i>
-</div>
-<span class="text-gray-600">Har kuni: 9:00 - 20:00</span>
-</li>
-</ul>
-</div>
-</div>
-<div class="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-<p class="text-gray-600 mb-4 md:mb-0">© 2025 GREEN MARKET.UZ - Barcha huquqlar himoyalangan</p>
-<div class="flex items-center space-x-4">
-<span class="text-gray-600">To'lov usullari:</span>
-<div class="flex space-x-3">
-<i class="ri-visa-fill text-blue-800 text-xl"></i>
-<i class="ri-mastercard-fill text-orange-600 text-xl"></i>
-<i class="ri-paypal-fill text-blue-600 text-xl"></i>
-</div>
-</div>
-</div>
-</div>
-</footer>
-<!-- Cart Modal -->
-<!-- Delete Confirmation Modal -->
-<div id="deleteConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden">
-<div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg p-6 w-[320px]">
-<h3 class="text-lg font-medium text-gray-800 mb-4">Mahsulotni o'chirishni xohlaysizmi?</h3>
-<div class="flex justify-end gap-3">
-<button id="cancelDelete" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-button hover:bg-gray-200 transition-colors whitespace-nowrap">Bekor qilish</button>
-<button id="confirmDelete" class="px-4 py-2 bg-red-500 text-white rounded-button hover:bg-red-600 transition-colors whitespace-nowrap">O'chirish</button>
-</div>
-</div>
-</div>
-<div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-<div class="fixed right-0 top-0 h-full w-[480px] bg-white shadow-lg transform transition-transform duration-300 translate-x-full">
-<div class="flex flex-col h-full">
-<!-- Header -->
-<div class="p-6 border-b">
-<div class="flex items-center justify-between">
-<h2 class="text-xl font-bold text-gray-800">Savat</h2>
-<button id="closeCartModal" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
-<i class="ri-close-line text-gray-700"></i>
-</button>
-</div>
-</div>
-<!-- Cart Items -->
-<div class="flex-1 overflow-y-auto p-6">
-<div id="cartItems" class="space-y-4">
-<!-- Cart items will be dynamically inserted here -->
-</div>
-</div>
-<!-- Footer -->
-<div class="border-t p-6">
-<div class="flex justify-between items-center mb-4">
-<span class="text-gray-600">Umumiy summa:</span>
-<span id="cartTotal" class="text-xl font-bold text-gray-800">0 so'm</span>
-</div>
-<a href="https://readdy.ai/home/31ceb0b3-1e26-42ef-8719-ed38ccda52db/fa1deb34-e172-4c36-93a6-fc76d5b8d043" data-readdy="true" class="block">
-  <button class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
-    Buyurtma berish
-  </button>
-</a>
-</div>
-</div>
-</div>
-</div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-const cartButtons = document.querySelectorAll('.product-card button.bg-primary');
-const cartCounter = document.getElementById('cartCounter');
-const cartButton = document.getElementById('cartButton');
-const cartModal = document.getElementById('cartModal');
-const closeCartModal = document.getElementById('closeCartModal');
-const cartItems = document.getElementById('cartItems');
-const cartTotal = document.getElementById('cartTotal');
-let cartCount = 4;
-let cart = [
-{
-id: 1,
-name: "Oddiy Archa",
-price: 450000,
-quantity: 1,
-image: "https://readdy.ai/api/search-image?query=beautiful%20pine%20tree%20with%20deep%20green%20needles%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=1&orientation=landscape"
-},
-{
-id: 2,
-name: "Ko'k Archa",
-price: 650000,
-quantity: 2,
-image: "https://readdy.ai/api/search-image?query=beautiful%20blue%20spruce%20tree%20with%20blue-green%20needles%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=2&orientation=landscape"
-},
-{
-id: 3,
-name: "Yapon Zarangi",
-price: 1200000,
-quantity: 1,
-image: "https://readdy.ai/api/search-image?query=beautiful%20Japanese%20maple%20tree%20with%20red%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=3&orientation=landscape"
-}
-];
-function formatPrice(price) {
-return price.toLocaleString('uz-UZ') + " so'm";
-}
-function updateCartTotal() {
-const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-cartTotal.textContent = formatPrice(total);
-}
-function updateCartUI() {
-let currentItemId = null;
-const deleteConfirmModal = document.getElementById('deleteConfirmModal');
-const cancelDelete = document.getElementById('cancelDelete');
-const confirmDelete = document.getElementById('confirmDelete');
-cartItems.innerHTML = cart.map(item => `
-<div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg" data-item-id="${item.id}">
-<img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover object-top rounded">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>greenmarket.life - Ko'chatlar va Manzarali Daraxtlar</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#2e7d32", secondary: "#66bb6a" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: #f9faf7;
+      }
+      .modal-overlay {
+        background-color: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(46, 125, 50, 0.1);
+      }
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(46, 125, 50, 0.1);
+      }
+      input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        background: #e0e0e0;
+        border-radius: 999px;
+        outline: none;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        background: #2e7d32;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        background: #2e7d32;
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+      }
+      .custom-checkbox {
+        position: relative;
+        padding-left: 28px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .custom-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: #fff;
+        border: 2px solid #e0e0e0;
+        border-radius: 4px;
+      }
+      .custom-checkbox:hover input ~ .checkmark {
+        border-color: #2e7d32;
+      }
+      .custom-checkbox input:checked ~ .checkmark {
+        background-color: #2e7d32;
+        border-color: #2e7d32;
+      }
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+      .custom-checkbox input:checked ~ .checkmark:after {
+        display: block;
+      }
+      .custom-checkbox .checkmark:after {
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      .tab-button {
+        position: relative;
+        z-index: 1;
+      }
+      .tab-button.active {
+        color: white;
+      }
+      .tab-slider {
+        position: absolute;
+        height: 80%;
+        top: 10%;
+        transition: all 0.3s ease;
+        border-radius: 9999px;
+        z-index: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="categoryModal">
+      <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold text-gray-800 mb-2">
+            O'zingizga kerakli qatorni tanlang
+          </h2>
+          <p class="text-gray-600">
+            GREEN MARKET.UZ - Sifatli ko'chatlar va manzarali daraxtlar
+          </p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <!-- Manzarali daraxtlar -->
+          <div
+            class="category-card bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border border-gray-100"
+            data-category="manzarali-daraxtlar"
+          >
+            <div
+              class="w-16 h-16 flex items-center justify-center bg-green-50 rounded-full mb-4"
+            >
+              <i class="ri-plant-line text-primary ri-2x"></i>
+            </div>
+            <h3 class="text-gray-800 font-medium text-center">
+              Manzarali daraxtlar
+            </h3>
+          </div>
+          <!-- Ko'chatlar -->
+          <div
+            class="category-card bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border border-gray-100"
+            data-category="kochatlar"
+          >
+            <div
+              class="w-16 h-16 flex items-center justify-center bg-green-50 rounded-full mb-4"
+            >
+              <i class="ri-seedling-line text-primary ri-2x"></i>
+            </div>
+            <h3 class="text-gray-800 font-medium text-center">Ko'chatlar</h3>
+          </div>
+          <!-- Gullar -->
+          <div
+            class="category-card bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border border-gray-100"
+            data-category="gullar"
+          >
+            <div
+              class="w-16 h-16 flex items-center justify-center bg-green-50 rounded-full mb-4"
+            >
+              <i class="ri-flower-line text-primary ri-2x"></i>
+            </div>
+            <h3 class="text-gray-800 font-medium text-center">Gullar</h3>
+          </div>
+          <!-- Bog' jihozlari -->
+          <div
+            class="category-card bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border border-gray-100"
+            data-category="bog-jihozlari"
+          >
+            <div
+              class="w-16 h-16 flex items-center justify-center bg-green-50 rounded-full mb-4"
+            >
+              <i class="ri-scissors-cut-line text-primary ri-2x"></i>
+            </div>
+            <h3 class="text-gray-800 font-medium text-center">
+              Bog' jihozlari
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+      <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <a href="#" class="flex items-center">
+          <span class="text-primary text-2xl font-['Pacifico']"
+            >GREEN MARKET.UZ</span
+          >
+        </a>
+        <div class="flex items-center space-x-6">
+          <div class="hidden md:flex items-center space-x-6">
+            
+            <a href="sotib_olish_katalogi.html" class="text-gray-700 hover:text-primary font-medium"
+              >Sotib olamiz uchun</a
+            >
+            <a href="#" class="text-gray-700 hover:text-primary font-medium"
+              >Biz haqimizda</a
+            >
+            <a href="#" class="text-gray-700 hover:text-primary font-medium"
+              >Aloqa</a
+            >
+          </div>
+          <div class="flex items-center space-x-4">
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer"
+            >
+              <i class="ri-search-line text-gray-700"></i>
+            </div>
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer"
+            >
+              <i class="ri-heart-line text-gray-700"></i>
+            </div>
+            <div
+              id="cartButton"
+              class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer relative"
+            >
+              <i class="ri-shopping-cart-line text-gray-700"></i>
+              <span
+                id="cartCounter"
+                class="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full"
+                >4</span
+              >
+            </div>
+            <div
+              class="w-10 h-10 md:hidden flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer"
+              id="mobileMenuButton"
+            >
+              <i class="ri-menu-line text-gray-700"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Mobile Menu -->
+    <div
+      class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"
+      id="mobileMenu"
+    >
+      <div class="bg-white h-full w-64 p-4 transform transition-transform">
+        <div class="flex justify-between items-center mb-6">
+          <span class="text-primary text-xl font-['Pacifico']"
+            >GREEN MARKET.UZ</span
+          >
+          <div
+            class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer"
+            id="closeMenu"
+          >
+            <i class="ri-close-line text-gray-700"></i>
+          </div>
+        </div>
+        <div class="flex flex-col space-y-4">
+          
+          <a href="./sotib_olish_katalogi.html" class="text-gray-700 hover:text-primary font-medium py-2"
+            >Sotish uchun</a
+          >
+          <a href="#" class="text-gray-700 hover:text-primary font-medium py-2"
+            >Biz haqimizda</a
+          >
+          <a href="#" class="text-gray-700 hover:text-primary font-medium py-2"
+            >Aloqa</a
+          >
+        </div>
+      </div>
+    </div>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+      <!-- Breadcrumbs -->
+      <div class="flex items-center text-sm text-gray-500 mb-6">
+        <a href="#" class="hover:text-primary">Bosh sahifa</a>
+        <i class="ri-arrow-right-s-line mx-2"></i>
+        <span class="text-gray-700 font-medium">Manzarali daraxtlar</span>
+      </div>
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Filters Sidebar -->
+        <div class="lg:w-1/4">
+          <div class="bg-white rounded-lg shadow-sm p-6 sticky top-24">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Filtrlash</h3>
+            <!-- Price Filter -->
+            <div class="mb-6">
+              <!-- <h4 class="font-medium text-gray-700 mb-3">Narx</h4>
+              <div class="mb-4">
+                <input
+                  type="range"
+                  min="0"
+                  max="5000000"
+                  value="2500000"
+                  class="w-full"
+                  id="priceRange"
+                />
+                <div class="flex justify-between mt-2 text-sm text-gray-600">
+                  <span>0 so'm</span>
+                  <span id="priceValue">100,000 so'm</span>
+                  <span>500,000 so'm</span>
+                </div>
+              </div> -->
+            </div>
+            <!-- Height Filter -->
+            <div class="mb-6">
+              <h4 class="font-medium text-gray-700 mb-3">Balandligi</h4>
+              <div class="space-y-2">
+                <label
+                  class="custom-checkbox flex items-center text-sm text-gray-700"
+                >
+                  <input type="checkbox" id="height1" checked />
+                  <span class="checkmark" data-checkbox="height1"></span>
+                  1-2 metr
+                </label>
+                <label
+                  class="custom-checkbox flex items-center text-sm text-gray-700"
+                >
+                  <input type="checkbox" id="height2" />
+                  <span class="checkmark" data-checkbox="height2"></span>
+                  2-3 metr
+                </label>
+                <label
+                  class="custom-checkbox flex items-center text-sm text-gray-700"
+                >
+                  <input type="checkbox" id="height3" />
+                  <span class="checkmark" data-checkbox="height3"></span>
+                  3-5 metr
+                </label>
+                <label
+                  class="custom-checkbox flex items-center text-sm text-gray-700"
+                >
+                  <input type="checkbox" id="height4" />
+                  <span class="checkmark" data-checkbox="height4"></span>
+                  5+ metr
+                </label>
+              </div>
+            </div>
+            <!-- Season Filter -->
+            <div class="mb-6">
+              <h4 class="font-medium text-gray-700 mb-3">Mavsumiylik</h4>
+              <div class="space-y-2">
+                <label
+                  class="custom-checkbox flex items-center text-sm text-gray-700"
+                >
+                  <input type="checkbox" checked />
+                  <span class="checkmark"></span>
+                  Doimiy yashil
+                </label>
+                <label
+                  class="custom-checkbox flex items-center text-sm text-gray-700"
+                >
+                  <input type="checkbox" />
+                  <span class="checkmark"></span>
+                  Barglarini to'kuvchi
+                </label>
+              </div>
+            </div>
+            <button
+              class="w-full bg-primary text-white py-2 px-4 rounded-button font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+            >
+              Filtrlash
+            </button>
+          </div>
+        </div>
+        <!-- Products Grid -->
+        <div class="lg:w-3/4">
+          <!-- Category Title and Sorting -->
+          <div
+            class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6"
+          >
+            <div>
+              <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                Manzarali daraxtlar
+              </h1>
+              <p class="text-gray-600">
+                Uyingiz va bog'ingiz uchun eng sara manzarali daraxtlar
+              </p>
+            </div>
+            <div class="mt-4 md:mt-0 flex items-center">
+              <span class="text-gray-600 mr-3">Saralash:</span>
+              <div class="relative">
+                <button
+                  class="bg-white border border-gray-300 rounded-button py-2 px-4 flex items-center space-x-2 text-gray-700 whitespace-nowrap"
+                >
+                  <span>Narx: arzondan qimmatga</span>
+                  <i class="ri-arrow-down-s-line"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Sub Categories Tabs -->
+          <div
+            class="bg-white rounded-full p-1 inline-flex mb-8 relative shadow-sm"
+          >
+            <div
+              class="tab-slider bg-primary"
+              style="width: 33.33%; left: 0"
+            ></div>
+            <button class="tab-button py-0.5 px-6 text-sm font-medium rounded-full active"data-tab="all">Barcha</button>
+            <button
+              class="tab-button py-2 px-6 text-sm font-medium rounded-full"
+              data-tab="mevalikochat"
+            >
+              Mevali ko'chatlar
+            </button>
+            <button
+              class="tab-button py-2 px-6 text-sm font-medium rounded-full"
+              data-tab="igna"
+            >
+              Manzarali ko'chatlar
+            </button>
+            <button
+              class="tab-button py-2 px-6 text-sm font-medium rounded-full"
+              data-tab="yaproq"
+            >
+              Gul ko'chatlari
+            </button>
+          </div>
+          <!-- Products Grid -->
+          <div
+            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
+          >
+            <!-- Product 1 -->
+            <div
+              class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300"
+            >
+              <div class="relative">
+                <img
+                  src="assets/imges/pinkledi.jpg"
+                  alt="Oddiy Archa"
+                  class="w-full h-48 object-cover object-top"
+                />
+                <button
+                  class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md"
+                >
+                  <i class="ri-heart-line text-gray-600"></i>
+                </button>
+              </div>
+              <div class="p-4">
+                <h3 class="font-medium text-gray-800 mb-1">Oddiy Archa</h3>
+                <p class="text-gray-600 text-sm mb-2">
+                  Igna bargli, doimiy yashil
+                </p>
+                <div class="flex items-center mb-3">
+                  <span
+                    class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full"
+                    >Balandligi: 1.5-2m</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-gray-800">450,000 so'm</span>
+                  <button
+                    class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Savatga
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product 2 -->
+            <div
+              class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300"
+            >
+              <div class="relative">
+                <img
+                  src="assets/imges/qizilolma.jpeg"
+                  alt="Ko'k Archa"
+                  class="w-full h-48 object-cover object-top"
+                />
+                <button
+                  class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md"
+                >
+                  <i class="ri-heart-line text-gray-600"></i>
+                </button>
+              </div>
+              <div class="p-4">
+                <h3 class="font-medium text-gray-800 mb-1">Ko'k Archa</h3>
+                <p class="text-gray-600 text-sm mb-2">
+                  Igna bargli, doimiy yashil
+                </p>
+                <div class="flex items-center mb-3">
+                  <span
+                    class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full"
+                    >Balandligi: 2-2.5m</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-gray-800">650,000 so'm</span>
+                  <button
+                    class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Savatga
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product 3 -->
+            <div
+              class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300"
+            >
+              <div class="relative">
+                <img
+                  src="assets/imges/behi.jpg"
+                  alt="Yapon Zarangi"
+                  class="w-full h-48 object-cover object-top"
+                />
+                <button
+                  class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md"
+                >
+                  <i class="ri-heart-line text-gray-600"></i>
+                </button>
+              </div>
+              <div class="p-4">
+                <h3 class="font-medium text-gray-800 mb-1">Yapon Zarangi</h3>
+                <p class="text-gray-600 text-sm mb-2">Yaproq bargli, qizil</p>
+                <div class="flex items-center mb-3">
+                  <span
+                    class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full"
+                    >Balandligi: 1-1.5m</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-gray-800">1,200,000 so'm</span>
+                  <button
+                    class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Savatga
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product 4 -->
+            <div
+              class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300"
+            >
+              <div class="relative">
+                <img
+                  src="https://readdy.ai/api/search-image?query=beautiful%20Japanese%20maple%20tree%20with%20red%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=3&orientation=landscape"
+                  alt="Yapon Zarangi"
+                  class="w-full h-48 object-cover object-top"
+                />
+                <button
+                  class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md"
+                >
+                  <i class="ri-heart-line text-gray-600"></i>
+                </button>
+              </div>
+              <div class="p-4">
+                <h3 class="font-medium text-gray-800 mb-1">Yapon Zarangi</h3>
+                <p class="text-gray-600 text-sm mb-2">Yaproq bargli, qizil</p>
+                <div class="flex items-center mb-3">
+                  <span
+                    class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full"
+                    >Balandligi: 1-1.5m</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-gray-800">1,200,000 so'm</span>
+                  <button
+                    class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Savatga
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product 5 -->
+            <div
+              class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300"
+            >
+              <div class="relative">
+                <img
+                  src="https://readdy.ai/api/search-image?query=beautiful%20weeping%20willow%20tree%20with%20long%20drooping%20branches%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=4&orientation=landscape"
+                  alt="Majnuntol"
+                  class="w-full h-48 object-cover object-top"
+                />
+                <button
+                  class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md"
+                >
+                  <i class="ri-heart-line text-gray-600"></i>
+                </button>
+              </div>
+              <div class="p-4">
+                <h3 class="font-medium text-gray-800 mb-1">Majnuntol</h3>
+                <p class="text-gray-600 text-sm mb-2">Yaproq bargli, osilgan</p>
+                <div class="flex items-center mb-3">
+                  <span
+                    class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full"
+                    >Balandligi: 2.5-3m</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-gray-800">10,000 so'm</span>
+                  <button
+                    class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Savatga
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product 6 -->
+            <div
+              class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300"
+            >
+              <div class="relative">
+                <img
+                  src="https://readdy.ai/api/search-image?query=beautiful%20thuja%20occidentalis%20tree%2C%20emerald%20green%20arborvitae%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=5&orientation=landscape"
+                  alt="Tuya"
+                  class="w-full h-48 object-cover object-top"
+                />
+                <button
+                  class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md"
+                >
+                  <i class="ri-heart-line text-gray-600"></i>
+                </button>
+              </div>
+              <div class="p-4">
+                <h3 class="font-medium text-gray-800 mb-1">Tuya</h3>
+                <p class="text-gray-600 text-sm mb-2">
+                  Igna bargli, piramida shakli
+                </p>
+                <div class="flex items-center mb-3">
+                  <span
+                    class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full"
+                    >Balandligi: 1.8-2.2m</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-gray-800">580,000 so'm</span>
+                  <button
+                    class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Savatga
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product 7 -->
+            <div
+              class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300"
+            >
+              <div class="relative">
+                <img
+                  src="https://readdy.ai/api/search-image?query=beautiful%20magnolia%20tree%20with%20large%20white%20flowers%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=6&orientation=landscape"
+                  alt="Magnoliya"
+                  class="w-full h-48 object-cover object-top"
+                />
+                <button
+                  class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md"
+                >
+                  <i class="ri-heart-line text-gray-600"></i>
+                </button>
+              </div>
+              <div class="p-4">
+                <h3 class="font-medium text-gray-800 mb-1">Magnoliya</h3>
+                <p class="text-gray-600 text-sm mb-2">
+                  Yaproq bargli, gullaydigan
+                </p>
+                <div class="flex items-center mb-3">
+                  <span
+                    class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full"
+                    >Balandligi: 1.5-2m</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-gray-800">1,450,000 so'm</span>
+                  <button
+                    class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Savatga
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product 8 -->
+            <div
+              class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300"
+            >
+              <div class="relative">
+                <img
+                  src="https://readdy.ai/api/search-image?query=beautiful%20juniper%20tree%20with%20blue%20berries%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=7&orientation=landscape"
+                  alt="Archa (Juniper)"
+                  class="w-full h-48 object-cover object-top"
+                />
+                <button
+                  class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md"
+                >
+                  <i class="ri-heart-line text-gray-600"></i>
+                </button>
+              </div>
+              <div class="p-4">
+                <h3 class="font-medium text-gray-800 mb-1">Archa (Juniper)</h3>
+                <p class="text-gray-600 text-sm mb-2">
+                  Igna bargli, ko'k mevali
+                </p>
+                <div class="flex items-center mb-3">
+                  <span
+                    class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full"
+                    >Balandligi: 1-1.2m</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-gray-800">520,000 so'm</span>
+                  <button
+                    class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Savatga
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product 9 -->
+            <div
+              class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300"
+            >
+              <div class="relative">
+                <img
+                  src="https://readdy.ai/api/search-image?query=beautiful%20birch%20tree%20with%20white%20bark%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=8&orientation=landscape"
+                  alt="Oq Qayin"
+                  class="w-full h-48 object-cover object-top"
+                />
+                <button
+                  class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md"
+                >
+                  <i class="ri-heart-line text-gray-600"></i>
+                </button>
+              </div>
+              <div class="p-4">
+                <h3 class="font-medium text-gray-800 mb-1">Oq Qayin</h3>
+                <p class="text-gray-600 text-sm mb-2">
+                  Yaproq bargli, oq po'stloqli
+                </p>
+                <div class="flex items-center mb-3">
+                  <span
+                    class="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded-full"
+                    >Balandligi: 2.5-3m</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-gray-800">750,000 so'm</span>
+                  <button
+                    class="bg-primary text-white py-1.5 px-3 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Savatga
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Pagination -->
+          <div class="flex justify-center mt-10">
+            <div class="inline-flex rounded-md shadow-sm">
+              <button
+                class="py-2 px-4 border border-gray-300 bg-white text-gray-700 rounded-l-lg hover:bg-gray-50 whitespace-nowrap"
+              >
+                Oldingi
+              </button>
+              <button
+                class="py-2 px-4 border-t border-b border-gray-300 bg-primary text-white whitespace-nowrap"
+              >
+                1
+              </button>
+              <button
+                id="page2"
+                class="py-2 px-4 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50 whitespace-nowrap"
+              >
+                2
+              </button>
+              <button
+                class="py-2 px-4 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50 whitespace-nowrap"
+              >
+                3
+              </button>
+              <button
+                class="py-2 px-4 border border-gray-300 bg-white text-gray-700 rounded-r-lg hover:bg-gray-50 whitespace-nowrap"
+              >
+                Keyingi
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Footer -->
+    <footer class="bg-white mt-16 border-t border-gray-200">
+      <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div>
+            <a href="#" class="inline-block mb-6">
+              <span class="text-primary text-2xl font-['Pacifico']"
+                >GREEN MARKET.UZ</span
+              >
+            </a>
+            <p class="text-gray-600 mb-6">
+              Uyingiz va bog'ingiz uchun eng sifatli ko'chatlar, manzarali
+              daraxtlar va gullar
+            </p>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors"
+              >
+                <i class="ri-facebook-fill"></i>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors"
+              >
+                <i class="ri-instagram-line"></i>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors"
+              >
+                <i class="ri-telegram-line"></i>
+              </a>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-gray-800 font-bold mb-6">Katalog</h4>
+            <ul class="space-y-3">
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary"
+                  >Manzarali daraxtlar</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary"
+                  >Ko'chatlar</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary">Gullar</a>
+              </li>
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary"
+                  >Bog' jihozlari</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary"
+                  >O'g'itlar</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-gray-800 font-bold mb-6">Ma'lumot</h4>
+            <ul class="space-y-3">
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary"
+                  >Biz haqimizda</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary"
+                  >Yetkazib berish</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary"
+                  >To'lov usullari</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary">Kafolat</a>
+              </li>
+              <li>
+                <a href="#" class="text-gray-600 hover:text-primary"
+                  >Bog'lanish</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-gray-800 font-bold mb-6">Aloqa</h4>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <div
+                  class="w-5 h-5 flex items-center justify-center mt-0.5 mr-3 text-primary"
+                >
+                  <i class="ri-map-pin-line"></i>
+                </div>
+                <a class="text-gray-600" href="https://maps.app.goo.gl/SNYvnJkqFydKaRdf8" 
+                  >Andijon vil, Izboskan tumani, Yangichek ko'chasi, 53-uy</a>
+                >
+              </li>
+              <li class="flex items-center">
+                <div
+                  class="w-5 h-5 flex items-center justify-center mr-3 text-primary"
+                >
+                  <i class="ri-phone-line"></i>
+                </div>
+                <span class="text-gray-600">+998 945411079</span>
+              </li>
+              <li class="flex items-center">
+                <div
+                  class="w-5 h-5 flex items-center justify-center mr-3 text-primary"
+                >
+                  <i class="ri-mail-line"></i>
+                </div>
+                <span class="text-gray-600">nodirbekzalatoy@gmail.com</span>
+              </li>
+              <li class="flex items-center">
+                <div
+                  class="w-5 h-5 flex items-center justify-center mr-3 text-primary"
+                >
+                  <i class="ri-time-line"></i>
+                </div>
+                <span class="text-gray-600">Har kuni: 24/7</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"
+        >
+          <p class="text-gray-600 mb-4 md:mb-0">
+            © 2025 GREEN MARKET.UZ - Barcha huquqlar himoyalangan
+          </p>
+          <div class="flex items-center space-x-4">
+            <span class="text-gray-600">To'lov usullari:</span>
+            <div class="flex space-x-3">
+              <i class="ri-visa-fill text-blue-800 text-xl"></i>
+              <i class="ri-mastercard-fill text-orange-600 text-xl"></i>
+              <i class="ri-paypal-fill text-blue-600 text-xl"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Cart Modal -->
+    <!-- Delete Confirmation Modal -->
+    <div
+      id="deleteConfirmModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden"
+    >
+      <div
+        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg p-6 w-[320px]"
+      >
+        <h3 class="text-lg font-medium text-gray-800 mb-4">
+          Mahsulotni o'chirishni xohlaysizmi?
+        </h3>
+        <div class="flex justify-end gap-3">
+          <button
+            id="cancelDelete"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-button hover:bg-gray-200 transition-colors whitespace-nowrap"
+          >
+            Bekor qilish
+          </button>
+          <button
+            id="confirmDelete"
+            class="px-4 py-2 bg-red-500 text-white rounded-button hover:bg-red-600 transition-colors whitespace-nowrap"
+          >
+            O'chirish
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      id="cartModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden"
+    >
+      <div
+        class="fixed right-0 top-0 h-full w-[480px] bg-white shadow-lg transform transition-transform duration-300 translate-x-full"
+      >
+        <div class="flex flex-col h-full">
+          <!-- Header -->
+          <div class="p-6 border-b">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-bold text-gray-800">Savat</h2>
+              <button
+                id="closeCartModal"
+                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+              >
+                <i class="ri-close-line text-gray-700"></i>
+              </button>
+            </div>
+          </div>
+          <!-- Cart Items -->
+          <div class="flex-1 overflow-y-auto p-6">
+            <div id="cartItems" class="space-y-4">
+              <!-- Cart items will be dynamically inserted here -->
+            </div>
+          </div>
+          <!-- Footer -->
+          <div class="border-t p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-gray-600">Umumiy summa:</span>
+              <span id="cartTotal" class="text-xl font-bold text-gray-800"
+                >0 so'm</span
+              >
+            </div>
+            <a
+              href="#"
+              data-readdy="true"
+              class="block"
+            >
+              <button
+                class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+              >
+                Buyurtma berish
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const cartButtons = document.querySelectorAll(
+          ".product-card button.bg-primary"
+        );
+        const cartCounter = document.getElementById("cartCounter");
+        const cartButton = document.getElementById("cartButton");
+        const cartModal = document.getElementById("cartModal");
+        const closeCartModal = document.getElementById("closeCartModal");
+        const cartItems = document.getElementById("cartItems");
+        const cartTotal = document.getElementById("cartTotal");
+        let cartCount = 4;
+        let cart = [
+          {
+            id: 1,
+            name: "Oddiy Archa",
+            price: 450000,
+            quantity: 1,
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20pine%20tree%20with%20deep%20green%20needles%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=1&orientation=landscape",
+          },
+          {
+            id: 2,
+            name: "Ko'k Archa",
+            price: 650000,
+            quantity: 2,
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20blue%20spruce%20tree%20with%20blue-green%20needles%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=2&orientation=landscape",
+          },
+          {
+            id: 3,
+            name: "Yapon Zarangi",
+            price: 1200000,
+            quantity: 1,
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20Japanese%20maple%20tree%20with%20red%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=3&orientation=landscape",
+          },
+        ];
+        function formatPrice(price) {
+          return price.toLocaleString("uz-UZ") + " so'm";
+        }
+        function updateCartTotal() {
+          const total = cart.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+          );
+          cartTotal.textContent = formatPrice(total);
+        }
+        function updateCartUI() {
+          let currentItemId = null;
+          const deleteConfirmModal =
+            document.getElementById("deleteConfirmModal");
+          const cancelDelete = document.getElementById("cancelDelete");
+          const confirmDelete = document.getElementById("confirmDelete");
+          cartItems.innerHTML = cart
+            .map(
+              (item) => `
+<div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg" data-item-id="${
+                item.id
+              }">
+<img src="${item.image}" alt="${
+                item.name
+              }" class="w-20 h-20 object-cover object-top rounded">
 <div class="flex-1">
 <h3 class="font-medium text-gray-800">${item.name}</h3>
 <div class="text-primary font-medium mt-1">${formatPrice(item.price)}</div>
@@ -698,219 +1128,261 @@ cartItems.innerHTML = cart.map(item => `
 <i class="ri-delete-bin-line text-gray-500"></i>
 </button>
 </div>
-`).join('');
-updateCartTotal();
-// Add event listeners to quantity buttons
-document.querySelectorAll('.decrease-quantity').forEach(btn => {
-btn.addEventListener('click', (e) => {
-const itemId = parseInt(e.target.closest('[data-item-id]').dataset.itemId);
-const item = cart.find(i => i.id === itemId);
-if (item) {
-if (item.quantity > 1) {
-item.quantity--;
-updateCartUI();
-} else {
-currentItemId = itemId;
-deleteConfirmModal.classList.remove('hidden');
-}
-}
-});
-});
-cancelDelete.addEventListener('click', () => {
-deleteConfirmModal.classList.add('hidden');
-currentItemId = null;
-});
-confirmDelete.addEventListener('click', () => {
-if (currentItemId !== null) {
-cart = cart.filter(item => item.id !== currentItemId);
-cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-cartCounter.textContent = cartCount;
-deleteConfirmModal.classList.add('hidden');
-currentItemId = null;
-updateCartUI();
-}
-});
-document.querySelectorAll('.increase-quantity').forEach(btn => {
-btn.addEventListener('click', (e) => {
-const itemId = parseInt(e.target.closest('[data-item-id]').dataset.itemId);
-const item = cart.find(i => i.id === itemId);
-if (item) {
-item.quantity++;
-updateCartUI();
-}
-});
-});
-document.querySelectorAll('.remove-item').forEach(btn => {
-btn.addEventListener('click', (e) => {
-const itemId = parseInt(e.target.closest('[data-item-id]').dataset.itemId);
-cart = cart.filter(item => item.id !== itemId);
-cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-cartCounter.textContent = cartCount;
-updateCartUI();
-});
-});
-}
-cartButton.addEventListener('click', () => {
-cartModal.classList.remove('hidden');
-cartModal.querySelector('.transform').classList.remove('translate-x-full');
-updateCartUI();
-});
-closeCartModal.addEventListener('click', () => {
-cartModal.querySelector('.transform').classList.add('translate-x-full');
-setTimeout(() => {
-cartModal.classList.add('hidden');
-}, 300);
-});
-cartModal.addEventListener('click', (e) => {
-if (e.target === cartModal) {
-closeCartModal.click();
-}
-});
-function showToast(productName) {
-const toast = document.createElement('div');
-toast.className = 'fixed top-4 right-4 z-50 bg-primary text-white p-4 rounded-lg shadow-lg flex items-center justify-between min-w-[300px] transform translate-y-[-100%] opacity-0 transition-all duration-300';
-toast.innerHTML = `
+`
+            )
+            .join("");
+          updateCartTotal();
+          // Add event listeners to quantity buttons
+          document.querySelectorAll(".decrease-quantity").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const itemId = parseInt(
+                e.target.closest("[data-item-id]").dataset.itemId
+              );
+              const item = cart.find((i) => i.id === itemId);
+              if (item) {
+                if (item.quantity > 1) {
+                  item.quantity--;
+                  updateCartUI();
+                } else {
+                  currentItemId = itemId;
+                  deleteConfirmModal.classList.remove("hidden");
+                }
+              }
+            });
+          });
+          cancelDelete.addEventListener("click", () => {
+            deleteConfirmModal.classList.add("hidden");
+            currentItemId = null;
+          });
+          confirmDelete.addEventListener("click", () => {
+            if (currentItemId !== null) {
+              cart = cart.filter((item) => item.id !== currentItemId);
+              cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+              cartCounter.textContent = cartCount;
+              deleteConfirmModal.classList.add("hidden");
+              currentItemId = null;
+              updateCartUI();
+            }
+          });
+          document.querySelectorAll(".increase-quantity").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const itemId = parseInt(
+                e.target.closest("[data-item-id]").dataset.itemId
+              );
+              const item = cart.find((i) => i.id === itemId);
+              if (item) {
+                item.quantity++;
+                updateCartUI();
+              }
+            });
+          });
+          document.querySelectorAll(".remove-item").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const itemId = parseInt(
+                e.target.closest("[data-item-id]").dataset.itemId
+              );
+              cart = cart.filter((item) => item.id !== itemId);
+              cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+              cartCounter.textContent = cartCount;
+              updateCartUI();
+            });
+          });
+        }
+        cartButton.addEventListener("click", () => {
+          cartModal.classList.remove("hidden");
+          cartModal
+            .querySelector(".transform")
+            .classList.remove("translate-x-full");
+          updateCartUI();
+        });
+        closeCartModal.addEventListener("click", () => {
+          cartModal
+            .querySelector(".transform")
+            .classList.add("translate-x-full");
+          setTimeout(() => {
+            cartModal.classList.add("hidden");
+          }, 300);
+        });
+        cartModal.addEventListener("click", (e) => {
+          if (e.target === cartModal) {
+            closeCartModal.click();
+          }
+        });
+        function showToast(productName) {
+          const toast = document.createElement("div");
+          toast.className =
+            "fixed top-4 right-4 z-50 bg-primary text-white p-4 rounded-lg shadow-lg flex items-center justify-between min-w-[300px] transform translate-y-[-100%] opacity-0 transition-all duration-300";
+          toast.innerHTML = `
 <div class="flex items-center space-x-2">
 <i class="ri-checkbox-circle-line text-xl"></i>
 <span>Mahsulot savatga qo'shildi</span>
 </div>
 <button onclick="window.location.href='#cart'" class="text-sm underline hover:no-underline ml-4 whitespace-nowrap">Savatga o'tish</button>
 `;
-document.body.appendChild(toast);
-setTimeout(() => {
-toast.style.transform = 'translate(0)';
-toast.style.opacity = '1';
-}, 100);
-setTimeout(() => {
-toast.style.transform = 'translateY(-100%)';
-toast.style.opacity = '0';
-setTimeout(() => {
-document.body.removeChild(toast);
-}, 300);
-}, 3000);
-}
-if (cartButtons) {
-cartButtons.forEach(button => {
-button.addEventListener('click', function() {
-cartCount++;
-cartCounter.textContent = cartCount;
-const productName = this.closest('.product-card').querySelector('h3').textContent;
-showToast(productName);
-});
-});
-}
-const page2Button = document.getElementById('page2');
-const productsGrid = document.querySelector('.grid');
-const checkmarks = document.querySelectorAll('.checkmark');
-const filterButton = document.querySelector('button.whitespace-nowrap');
-if (checkmarks.length) {
-checkmarks.forEach(checkmark => {
-checkmark.addEventListener('click', function() {
-const checkboxId = this.getAttribute('data-checkbox');
-const checkbox = document.getElementById(checkboxId);
-if (checkbox) {
-checkbox.checked = !checkbox.checked;
-}
-});
-});
-}
-if (filterButton) {
-filterButton.addEventListener('click', applyFilters);
-}
-function applyFilters() {
-const selectedHeights = Array.from(document.querySelectorAll('[id^="height"]'))
-.filter(cb => cb.checked)
-.map(cb => cb.parentElement.textContent.trim());
-const selectedTypes = Array.from(document.querySelectorAll('[id^="type"]'))
-.filter(cb => cb.checked)
-.map(cb => cb.parentElement.textContent.trim());
-const selectedSeasons = Array.from(document.querySelectorAll('[id^="season"]'))
-.filter(cb => cb.checked)
-.map(cb => cb.parentElement.textContent.trim());
-const priceValue = parseInt(document.getElementById('priceRange').value);
-const productCards = document.querySelectorAll('.product-card');
-productCards.forEach(card => {
-const height = card.querySelector('.text-xs').textContent;
-const type = card.querySelector('.text-gray-600.text-sm').textContent;
-const price = parseInt(card.querySelector('.font-bold').textContent.replace(/[^\d]/g, ''));
-const matchesHeight = selectedHeights.length === 0 || selectedHeights.some(h => height.includes(h));
-const matchesType = selectedTypes.length === 0 || selectedTypes.some(t => type.includes(t));
-const matchesPrice = price <= priceValue;
-card.style.display = (matchesHeight && matchesType && matchesPrice) ? 'block' : 'none';
-});
-}
-const page2Products = [
-{
-image: "https://readdy.ai/api/search-image?query=beautiful%20ginkgo%20biloba%20tree%20with%20fan%20shaped%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=9&orientation=landscape",
-name: "Ginkgo Biloba",
-description: "Yaproq bargli, qadimiy",
-height: "2-2.5m",
-price: "1,850,000"
-},
-{
-image: "https://readdy.ai/api/search-image?query=beautiful%20cherry%20blossom%20tree%20with%20pink%20flowers%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=10&orientation=landscape",
-name: "Sakura",
-description: "Yaproq bargli, gullaydigan",
-height: "1.8-2.2m",
-price: "2,250,000"
-},
-{
-image: "https://readdy.ai/api/search-image?query=beautiful%20cypress%20tree%20with%20dark%20green%20foliage%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=11&orientation=landscape",
-name: "Sarvigul",
-description: "Igna bargli, ustunsimon",
-height: "2.5-3m",
-price: "920,000"
-},
-{
-image: "https://readdy.ai/api/search-image?query=beautiful%20maple%20tree%20with%20red%20autumn%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=12&orientation=landscape",
-name: "Zarang",
-description: "Yaproq bargli, kuzgi",
-height: "2-2.5m",
-price: "780,000"
-},
-{
-image: "https://readdy.ai/api/search-image?query=beautiful%20dwarf%20pine%20tree%2C%20compact%20and%20well%20shaped%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=13&orientation=landscape",
-name: "Pakana Archa",
-description: "Igna bargli, ixcham",
-height: "0.8-1m",
-price: "650,000"
-},
-{
-image: "https://readdy.ai/api/search-image?query=beautiful%20weeping%20cherry%20tree%20with%20pink%20flowers%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=14&orientation=landscape",
-name: "Majnun Gilos",
-description: "Yaproq bargli, osilgan",
-height: "1.5-2m",
-price: "1,350,000"
-},
-{
-image: "https://readdy.ai/api/search-image?query=beautiful%20golden%20cypress%20tree%20with%20yellow%20foliage%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=15&orientation=landscape",
-name: "Oltin Tuya",
-description: "Igna bargli, sariq",
-height: "1.2-1.5m",
-price: "850,000"
-},
-{
-image: "https://readdy.ai/api/search-image?query=beautiful%20red%20maple%20tree%20with%20burgundy%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=16&orientation=landscape",
-name: "Qizil Zarang",
-description: "Yaproq bargli, qizil",
-height: "1.8-2.2m",
-price: "950,000"
-}
-];
-if (page2Button && productsGrid) {
-page2Button.addEventListener('click', function() {
-const paginationButtons = document.querySelectorAll('.rounded-md button');
-paginationButtons.forEach(button => {
-if (button.textContent === '1') {
-button.classList.remove('bg-primary', 'text-white');
-button.classList.add('bg-white', 'text-gray-700');
-}
-if (button.textContent === '2') {
-button.classList.remove('bg-white', 'text-gray-700');
-button.classList.add('bg-primary', 'text-white');
-}
-});
-const newProductsHTML = page2Products.map(product => `
+          document.body.appendChild(toast);
+          setTimeout(() => {
+            toast.style.transform = "translate(0)";
+            toast.style.opacity = "1";
+          }, 100);
+          setTimeout(() => {
+            toast.style.transform = "translateY(-100%)";
+            toast.style.opacity = "0";
+            setTimeout(() => {
+              document.body.removeChild(toast);
+            }, 300);
+          }, 3000);
+        }
+        if (cartButtons) {
+          cartButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+              cartCount++;
+              cartCounter.textContent = cartCount;
+              const productName =
+                this.closest(".product-card").querySelector("h3").textContent;
+              showToast(productName);
+            });
+          });
+        }
+        const page2Button = document.getElementById("page2");
+        const productsGrid = document.querySelector(".grid");
+        const checkmarks = document.querySelectorAll(".checkmark");
+        const filterButton = document.querySelector("button.whitespace-nowrap");
+        if (checkmarks.length) {
+          checkmarks.forEach((checkmark) => {
+            checkmark.addEventListener("click", function () {
+              const checkboxId = this.getAttribute("data-checkbox");
+              const checkbox = document.getElementById(checkboxId);
+              if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+              }
+            });
+          });
+        }
+        if (filterButton) {
+          filterButton.addEventListener("click", applyFilters);
+        }
+        function applyFilters() {
+          const selectedHeights = Array.from(
+            document.querySelectorAll('[id^="height"]')
+          )
+            .filter((cb) => cb.checked)
+            .map((cb) => cb.parentElement.textContent.trim());
+          const selectedTypes = Array.from(
+            document.querySelectorAll('[id^="type"]')
+          )
+            .filter((cb) => cb.checked)
+            .map((cb) => cb.parentElement.textContent.trim());
+          const selectedSeasons = Array.from(
+            document.querySelectorAll('[id^="season"]')
+          )
+            .filter((cb) => cb.checked)
+            .map((cb) => cb.parentElement.textContent.trim());
+          const priceValue = parseInt(
+            document.getElementById("priceRange").value
+          );
+          const productCards = document.querySelectorAll(".product-card");
+          productCards.forEach((card) => {
+            const height = card.querySelector(".text-xs").textContent;
+            const type = card.querySelector(
+              ".text-gray-600.text-sm"
+            ).textContent;
+            const price = parseInt(
+              card.querySelector(".font-bold").textContent.replace(/[^\d]/g, "")
+            );
+            const matchesHeight =
+              selectedHeights.length === 0 ||
+              selectedHeights.some((h) => height.includes(h));
+            const matchesType =
+              selectedTypes.length === 0 ||
+              selectedTypes.some((t) => type.includes(t));
+            const matchesPrice = price <= priceValue;
+            card.style.display =
+              matchesHeight && matchesType && matchesPrice ? "block" : "none";
+          });
+        }
+        const page2Products = [
+          {
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20ginkgo%20biloba%20tree%20with%20fan%20shaped%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=9&orientation=landscape",
+            name: "Ginkgo Biloba",
+            description: "Yaproq bargli, qadimiy",
+            height: "2-2.5m",
+            price: "1,850,000",
+          },
+          {
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20cherry%20blossom%20tree%20with%20pink%20flowers%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=10&orientation=landscape",
+            name: "Sakura",
+            description: "Yaproq bargli, gullaydigan",
+            height: "1.8-2.2m",
+            price: "2,250,000",
+          },
+          {
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20cypress%20tree%20with%20dark%20green%20foliage%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=11&orientation=landscape",
+            name: "Sarvigul",
+            description: "Igna bargli, ustunsimon",
+            height: "2.5-3m",
+            price: "920,000",
+          },
+          {
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20maple%20tree%20with%20red%20autumn%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=12&orientation=landscape",
+            name: "Zarang",
+            description: "Yaproq bargli, kuzgi",
+            height: "2-2.5m",
+            price: "780,000",
+          },
+          {
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20dwarf%20pine%20tree%2C%20compact%20and%20well%20shaped%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=13&orientation=landscape",
+            name: "Pakana Archa",
+            description: "Igna bargli, ixcham",
+            height: "0.8-1m",
+            price: "650,000",
+          },
+          {
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20weeping%20cherry%20tree%20with%20pink%20flowers%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=14&orientation=landscape",
+            name: "Majnun Gilos",
+            description: "Yaproq bargli, osilgan",
+            height: "1.5-2m",
+            price: "1,350,000",
+          },
+          {
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20golden%20cypress%20tree%20with%20yellow%20foliage%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=15&orientation=landscape",
+            name: "Oltin Tuya",
+            description: "Igna bargli, sariq",
+            height: "1.2-1.5m",
+            price: "850,000",
+          },
+          {
+            image:
+              "https://readdy.ai/api/search-image?query=beautiful%20red%20maple%20tree%20with%20burgundy%20leaves%2C%20isolated%20on%20white%20background%2C%20professional%20product%20photography%20for%20garden%20shop%2C%20high%20quality&width=400&height=300&seq=16&orientation=landscape",
+            name: "Qizil Zarang",
+            description: "Yaproq bargli, qizil",
+            height: "1.8-2.2m",
+            price: "950,000",
+          },
+        ];
+        if (page2Button && productsGrid) {
+          page2Button.addEventListener("click", function () {
+            const paginationButtons =
+              document.querySelectorAll(".rounded-md button");
+            paginationButtons.forEach((button) => {
+              if (button.textContent === "1") {
+                button.classList.remove("bg-primary", "text-white");
+                button.classList.add("bg-white", "text-gray-700");
+              }
+              if (button.textContent === "2") {
+                button.classList.remove("bg-white", "text-gray-700");
+                button.classList.add("bg-primary", "text-white");
+              }
+            });
+            const newProductsHTML = page2Products
+              .map(
+                (product) => `
 <div class="product-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300">
 <div class="relative">
 <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover object-top">
@@ -930,86 +1402,102 @@ const newProductsHTML = page2Products.map(product => `
 </div>
 </div>
 </div>
-`).join('');
-productsGrid.innerHTML = newProductsHTML;
-});
-}
-const priceRange = document.getElementById('priceRange');
-const priceValue = document.getElementById('priceValue');
-if (priceRange && priceValue) {
-priceRange.addEventListener('input', function() {
-const value = parseInt(this.value).toLocaleString('uz-UZ');
-priceValue.textContent = value + ' so\'m';
-});
-}
-});
-// Tab Switching
-document.addEventListener('DOMContentLoaded', function() {
-const tabButtons = document.querySelectorAll('.tab-button');
-const tabSlider = document.querySelector('.tab-slider');
-const productCards = document.querySelectorAll('.product-card');
-if (tabButtons.length && tabSlider) {
-tabButtons.forEach((button, index) => {
-button.addEventListener('click', function() {
-const tabType = this.getAttribute('data-tab');
-// Remove active class from all buttons
-tabButtons.forEach(btn => btn.classList.remove('active'));
-// Add active class to clicked button
-this.classList.add('active');
-// Move slider
-const buttonWidth = 100 / tabButtons.length;
-tabSlider.style.width = buttonWidth + '%';
-tabSlider.style.left = (buttonWidth * index) + '%';
-// Filter products
-productCards.forEach(card => {
-const productDescription = card.querySelector('p').textContent.toLowerCase();
-if (tabType === 'all') {
-card.style.display = 'block';
-} else if (tabType === 'igna' && productDescription.includes('igna bargli')) {
-card.style.display = 'block';
-} else if (tabType === 'yaproq' && productDescription.includes('yaproq bargli')) {
-card.style.display = 'block';
-} else {
-card.style.display = 'none';
-}
-});
-});
-});
-}
-});
-// Category Modal
-document.addEventListener('DOMContentLoaded', function() {
-const categoryModal = document.getElementById('categoryModal');
-const categoryCards = document.querySelectorAll('.category-card');
-if (categoryModal && categoryCards.length) {
-categoryCards.forEach(card => {
-card.addEventListener('click', function() {
-const category = this.getAttribute('data-category');
-// Here you would normally navigate to the category page
-// For demo purposes, we'll just hide the modal
-categoryModal.style.display = 'none';
-});
-});
-}
-});
-// Mobile Menu
-document.addEventListener('DOMContentLoaded', function() {
-const mobileMenuButton = document.getElementById('mobileMenuButton');
-const closeMenuButton = document.getElementById('closeMenu');
-const mobileMenu = document.getElementById('mobileMenu');
-if (mobileMenuButton && closeMenuButton && mobileMenu) {
-mobileMenuButton.addEventListener('click', function() {
-mobileMenu.classList.remove('hidden');
-mobileMenu.querySelector('div').classList.add('translate-x-0');
-mobileMenu.querySelector('div').classList.remove('-translate-x-full');
-});
-closeMenuButton.addEventListener('click', function() {
-mobileMenu.classList.add('hidden');
-mobileMenu.querySelector('div').classList.remove('translate-x-0');
-mobileMenu.querySelector('div').classList.add('-translate-x-full');
-});
-}
-});
-</script>
-</body>
+`
+              )
+              .join("");
+            productsGrid.innerHTML = newProductsHTML;
+          });
+        }
+        const priceRange = document.getElementById("priceRange");
+        const priceValue = document.getElementById("priceValue");
+        if (priceRange && priceValue) {
+          priceRange.addEventListener("input", function () {
+            const value = parseInt(this.value).toLocaleString("uz-UZ");
+            priceValue.textContent = value + " so'm";
+          });
+        }
+      });
+      // Tab Switching
+      document.addEventListener("DOMContentLoaded", function () {
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const tabSlider = document.querySelector(".tab-slider");
+        const productCards = document.querySelectorAll(".product-card");
+        if (tabButtons.length && tabSlider) {
+          tabButtons.forEach((button, index) => {
+            button.addEventListener("click", function () {
+              const tabType = this.getAttribute("data-tab");
+              // Remove active class from all buttons
+              tabButtons.forEach((btn) => btn.classList.remove("active"));
+              // Add active class to clicked button
+              this.classList.add("active");
+              // Move slider
+              const buttonWidth = 100 / tabButtons.length;
+              tabSlider.style.width = buttonWidth + "%";
+              tabSlider.style.left = buttonWidth * index + "%";
+              // Filter products
+              productCards.forEach((card) => {
+                const productDescription = card
+                  .querySelector("p")
+                  .textContent.toLowerCase();
+                if (tabType === "all") {
+                  card.style.display = "block";
+                } else if (
+                  tabType === "igna" &&
+                  productDescription.includes("igna bargli")
+                ) {
+                  card.style.display = "block";
+                } else if (
+                  tabType === "yaproq" &&
+                  productDescription.includes("yaproq bargli")
+                ) {
+                } else if (
+                  tabType === "mevalikochat" &&
+                  productDescription.includes("mevalikochat")
+                ) {
+                  card.style.display = "block";
+                } else {
+                  card.style.display = "none";
+                }
+              });
+            });
+          });
+        }
+      });
+      // Category Modal
+      document.addEventListener("DOMContentLoaded", function () {
+        const categoryModal = document.getElementById("categoryModal");
+        const categoryCards = document.querySelectorAll(".category-card");
+        if (categoryModal && categoryCards.length) {
+          categoryCards.forEach((card) => {
+            card.addEventListener("click", function () {
+              const category = this.getAttribute("data-category");
+              // Here you would normally navigate to the category page
+              // For demo purposes, we'll just hide the modal
+              categoryModal.style.display = "none";
+            });
+          });
+        }
+      });
+      // Mobile Menu
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuButton = document.getElementById("mobileMenuButton");
+        const closeMenuButton = document.getElementById("closeMenu");
+        const mobileMenu = document.getElementById("mobileMenu");
+        if (mobileMenuButton && closeMenuButton && mobileMenu) {
+          mobileMenuButton.addEventListener("click", function () {
+            mobileMenu.classList.remove("hidden");
+            mobileMenu.querySelector("div").classList.add("translate-x-0");
+            mobileMenu
+              .querySelector("div")
+              .classList.remove("-translate-x-full");
+          });
+          closeMenuButton.addEventListener("click", function () {
+            mobileMenu.classList.add("hidden");
+            mobileMenu.querySelector("div").classList.remove("translate-x-0");
+            mobileMenu.querySelector("div").classList.add("-translate-x-full");
+          });
+        }
+      });
+    </script>
+  </body>
 </html>
